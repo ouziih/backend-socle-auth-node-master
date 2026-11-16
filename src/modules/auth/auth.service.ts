@@ -97,7 +97,7 @@ export class AuthService {
       ...(env.AUTH_EXPOSE_DEBUG_TOKENS
         ? { debug: { verification_token: verificationToken } }
         : {}),
-        Location: "/api/users/{id-nouvelle-utilisateur}"
+        Location: `${env.APP_URL}/api/users/${user.id}`
     }
   }
 

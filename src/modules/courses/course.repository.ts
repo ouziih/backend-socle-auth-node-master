@@ -42,5 +42,4 @@ export class CourseRepository implements ICourseRepository {
   updateStatus(course: Course, status: CourseStatus): Promise<Course> {
     return course.update({ status })
   }
-
 }

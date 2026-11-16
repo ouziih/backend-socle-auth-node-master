@@ -38,4 +38,16 @@ export class Course extends Model<InferAttributes<Course>, InferCreationAttribut
     )
     return Course
   }
+
+  toCourseJSON() {
+    return {
+      id: this.id,
+      teacher_id: this.teacherId,
+      title: this.title,
+      description: this.description,
+      status: this.status,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt,
+    }
+  }
 }

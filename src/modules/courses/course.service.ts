@@ -1,6 +1,8 @@
 import { ForbiddenError, NotFoundError } from '../../shared/errors.js'
-import { CourseRepository, type ICourseRepository } from './course.repository.js'
-import type { Course } from './course.model.js'
+import {
+  CourseRepository,
+  type ICourseRepository,
+} from './course.repository.js'
 
 type CourseInput = {
   title: string
@@ -12,18 +14,6 @@ type CourseUpdate = {
   description?: string | null
 }
 
-function toCourseJSON(course: Course) {
-  return {
-    id: course.id,
-    teacher_id: course.teacherId,
-    title: course.title,
-    description: course.description,
-    status: course.status,
-    created_at: course.createdAt,
-    updated_at: course.updatedAt,
-  }
-}
-
 export class CourseService {
   constructor(
     private readonly courses: ICourseRepository = new CourseRepository(),
@@ -31,7 +21,7 @@ export class CourseService {
 
   async list() {
     const courses = await this.courses.listPublished()
-    return courses.map(toCourseJSON)
+    return courses.map((course) => course.toCourseJSON())
   }
 
   async show(id: string) {
@@ -39,7 +29,7 @@ export class CourseService {
     if (!course || course.status !== 'PUBLISHED') {
       throw new NotFoundError('Cours introuvable.')
     }
-    return toCourseJSON(course)
+    return course.toCourseJSON()
   }
 
   async create(teacherId: string, input: CourseInput) {
@@ -48,16 +38,16 @@ export class CourseService {
       title: input.title,
       description: input.description ?? null,
     })
-    return toCourseJSON(course)
+    return course.toCourseJSON()
   }
 
   async update(userId: string, isAdmin: boolean, id: string, input: CourseUpdate) {
-    const course = await this.requireEditable(userId, isAdmin, id)
-    return toCourseJSON(await this.courses.update(course, input))
+    const course = await this.peuxEditer(userId, isAdmin, id)
+    return (await this.courses.update(course, input)).toCourseJSON()
   }
 
   async remove(userId: string, isAdmin: boolean, id: string) {
-    const course = await this.requireEditable(userId, isAdmin, id)
+    const course = await this.peuxEditer(userId, isAdmin, id)
     if (course.status !== 'DRAFT') {
       throw new ForbiddenError('Seul un brouillon peut être archivé.')
     }
@@ -66,11 +56,11 @@ export class CourseService {
   }
 
   async publish(userId: string, isAdmin: boolean, id: string) {
-    const course = await this.requireEditable(userId, isAdmin, id)
-    return toCourseJSON(await this.courses.updateStatus(course, 'PUBLISHED'))
+    const course = await this.peuxEditer(userId, isAdmin, id)
+    return (await this.courses.updateStatus(course, 'PUBLISHED')).toCourseJSON()
   }
 
-  private async requireEditable(userId: string, isAdmin: boolean, id: string) {
+  private async peuxEditer(userId: string, isAdmin: boolean, id: string) {
     const course = await this.courses.findById(id)
     if (!course) throw new NotFoundError('Cours introuvable.')
     if (!isAdmin && course.teacherId !== userId) {
