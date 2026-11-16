@@ -20,7 +20,7 @@ async function bootstrap(): Promise<void> {
     logger.info({ signal }, 'Arrêt gracieux demandé.')
     server.close(() => {
       void disconnectDatabase().finally(() => process.exit(0))
-    })
+    }) 
   }
 
   process.once('SIGINT', () => shutdown('SIGINT'))

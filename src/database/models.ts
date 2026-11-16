@@ -2,6 +2,7 @@ import { AuthAuditEvent } from '../modules/auth/auth-audit-event.model.js'
 import { OneTimeToken } from '../modules/auth/one-time-token.model.js'
 import { RefreshToken } from '../modules/auth/refresh-token.model.js'
 import { User } from '../modules/users/user.model.js'
+import { Course } from '../modules/courses/course.model.js'
 import { sequelize } from './sequelize.js'
 
 let initialized = false
@@ -13,6 +14,7 @@ export function initializeModels(): void {
   RefreshToken.initModel(sequelize)
   OneTimeToken.initModel(sequelize)
   AuthAuditEvent.initModel(sequelize)
+  Course.initModel(sequelize)
 
   User.hasMany(RefreshToken, {
     foreignKey: 'userId',
@@ -39,7 +41,10 @@ export function initializeModels(): void {
   })
   AuthAuditEvent.belongsTo(User, { foreignKey: 'userId', as: 'user' })
 
+  User.hasMany(Course, { foreignKey: 'teacherId', as: 'courses', onDelete: 'RESTRICT' })
+  Course.belongsTo(User, { foreignKey: 'teacherId', as: 'teacher' })
+
   initialized = true
 }
 
-export const Models = { User, RefreshToken, OneTimeToken, AuthAuditEvent }
+export const Models = { User, RefreshToken, OneTimeToken, AuthAuditEvent, Course }

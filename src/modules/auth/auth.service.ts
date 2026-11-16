@@ -88,7 +88,7 @@ export class AuthService {
     await this.mail.sendEmailVerification(user, verificationToken)
     const tokens = await this.issueTokens(user, context)
     await this.recordAudit('auth.registered', 'success', user.id, user.email, context)
-
+    logger.info({id: user.id,name: user.name,},'nouveau compte cree',)
     return {
       user: user.toSafeJSON(),
       ...tokens,
@@ -97,6 +97,7 @@ export class AuthService {
       ...(env.AUTH_EXPOSE_DEBUG_TOKENS
         ? { debug: { verification_token: verificationToken } }
         : {}),
+        Location: "/api/users/{id-nouvelle-utilisateur}"
     }
   }
 
