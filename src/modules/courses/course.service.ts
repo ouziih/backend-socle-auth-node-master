@@ -1,4 +1,5 @@
 import { ForbiddenError, NotFoundError } from '../../shared/errors.js'
+import { getPaginationMeta } from '../../utils/utils.js';
 import {
   CourseRepository,
   type ICourseRepository,
@@ -14,14 +15,24 @@ type CourseUpdate = {
   description?: string | null
 }
 
+export type PaginationCourse = {
+  page: number,
+  limit: number
+}
+
 export class CourseService {
   constructor(
     private readonly courses: ICourseRepository = new CourseRepository(),
   ) {}
 
-  async list() {
-    const courses = await this.courses.listPublished()
-    return courses.map((course) => course.toCourseJSON())
+  async list(paginationData: PaginationCourse) {
+    const offset = (paginationData.page - 1)*paginationData.limit;
+    const {rows,count} = (await this.courses.listPublished(paginationData.limit,offset))
+
+    return {
+      courses: rows.map((course) => course.toCourseJSON()), 
+      pagination:getPaginationMeta(paginationData.page,paginationData.limit,count)
+    }
   }
 
   async show(id: string) {
@@ -49,15 +60,20 @@ export class CourseService {
   async remove(userId: string, isAdmin: boolean, id: string) {
     const course = await this.peuxEditer(userId, isAdmin, id)
     if (course.status !== 'DRAFT') {
-      throw new ForbiddenError('Seul un brouillon peut être archivé.')
+      throw new ForbiddenError('Seul un brouillon peut être supprimé.')
     }
-    await this.courses.updateStatus(course, 'ARCHIVED')
-    return { message: 'Cours archivé.' }
+    await this.courses.delete(course)
+    return { message: 'Cours supprimé.' }
   }
 
   async publish(userId: string, isAdmin: boolean, id: string) {
     const course = await this.peuxEditer(userId, isAdmin, id)
     return (await this.courses.updateStatus(course, 'PUBLISHED')).toCourseJSON()
+  }
+
+  async unpublish(userId: string, isAdmin: boolean, id: string) {
+    const course = await this.peuxEditer(userId, isAdmin, id)
+    return (await this.courses.updateStatus(course, 'DRAFT')).toCourseJSON()
   }
 
   private async peuxEditer(userId: string, isAdmin: boolean, id: string) {

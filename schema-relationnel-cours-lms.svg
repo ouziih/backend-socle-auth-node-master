@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980">
+  <style>
+    text { font-family: Arial, sans-serif; fill: #e5e7eb; }
+    .title { font-size: 28px; font-weight: bold; fill: #38bdf8; }
+    .subtitle { font-size: 15px; fill: #94a3b8; }
+    .box { fill: #1e293b; stroke: #64748b; stroke-width: 1.5; rx: 10; }
+    .head-users { fill: #3b82f6; }
+    .head-courses { fill: #10b981; }
+    .head-modules { fill: #8b5cf6; }
+    .head-lessons { fill: #ec4899; }
+    .head-enrollments { fill: #f59e0b; }
+    .head-progress { fill: #06b6d4; }
+    .head { font-size: 18px; font-weight: bold; }
+    .field { font-size: 14px; }
+    .type { font-size: 12px; fill: #94a3b8; }
+    .line { stroke: #38bdf8; stroke-width: 2; fill: none; }
+    .card { fill: #ec4899; font-size: 11px; font-weight: bold; }
+    .label { font-size: 13px; fill: #fbbf24; }
+  </style>
+
+  <rect width="1500" height="980" fill="#0f172a"/>
+  <text x="750" y="42" text-anchor="middle" class="title">SCHÉMA RELATIONNEL — COURS &amp; LMS</text>
+  <text x="750" y="68" text-anchor="middle" class="subtitle">UUID adaptés à l’architecture actuelle du projet</text>
+
+  <path class="line" d="M330 205 H430"/>
+  <path class="line" d="M730 205 H820"/>
+  <path class="line" d="M1120 205 H1200"/>
+  <path class="line" d="M240 430 V690 H460"/>
+  <path class="line" d="M585 430 V610"/>
+  <path class="line" d="M1340 430 V610"/>
+  <path class="line" d="M170 430 V900 H1230 V840"/>
+
+  <text x="345" y="194" class="label">1 → N</text>
+  <text x="745" y="194" class="label">1 → N</text>
+  <text x="1135" y="194" class="label">1 → N</text>
+  <text x="300" y="675" class="label">1 → N inscrit</text>
+  <text x="600" y="595" class="label">1 → N</text>
+  <text x="1355" y="595" class="label">1 → N</text>
+  <text x="900" y="895" class="label">1 → N progression</text>
+
+  <g transform="translate(40 105)">
+    <rect class="box" width="290" height="325"/>
+    <rect class="head-users" width="290" height="48" rx="10"/>
+    <text x="16" y="31" class="head">users</text>
+    <text x="16" y="78" class="field">🔑 id</text><text x="190" y="78" class="type">UUID</text>
+    <text x="16" y="111" class="field">name</text><text x="190" y="111" class="type">VARCHAR</text>
+    <text x="16" y="144" class="field">email</text><text x="190" y="144" class="type">UNIQUE</text>
+    <text x="16" y="177" class="field">password_hash</text><text x="190" y="177" class="type">VARCHAR</text>
+    <text x="16" y="210" class="field">role</text><text x="190" y="210" class="type">ENUM</text>
+    <text x="16" y="243" class="field">email_verified_at</text><text x="190" y="243" class="type">DATE NULL</text>
+    <text x="16" y="276" class="field">created_at</text><text x="190" y="276" class="type">DATETIME</text>
+    <text x="16" y="309" class="field">updated_at</text><text x="190" y="309" class="type">DATETIME</text>
+  </g>
+
+  <g transform="translate(430 105)">
+    <rect class="box" width="300" height="325"/>
+    <rect class="head-courses" width="300" height="48" rx="10"/>
+    <text x="16" y="31" class="head">courses</text>
+    <text x="16" y="78" class="field">🔑 id</text><text x="205" y="78" class="type">UUID</text>
+    <text x="16" y="111" class="field">🔗 teacher_id</text><text x="205" y="111" class="type">→ users.id</text>
+    <text x="16" y="144" class="field">title</text><text x="205" y="144" class="type">VARCHAR</text>
+    <text x="16" y="177" class="field">description</text><text x="205" y="177" class="type">TEXT NULL</text>
+    <text x="16" y="210" class="field">status</text><text x="205" y="210" class="type">ENUM</text>
+    <text x="16" y="243" class="field">deleted_at</text><text x="205" y="243" class="type">DATE NULL</text>
+    <text x="16" y="276" class="field">created_at</text><text x="205" y="276" class="type">DATETIME</text>
+    <text x="16" y="309" class="field">updated_at</text><text x="205" y="309" class="type">DATETIME</text>
+  </g>
+
+  <g transform="translate(820 105)">
+    <rect class="box" width="300" height="325"/>
+    <rect class="head-modules" width="300" height="48" rx="10"/>
+    <text x="16" y="31" class="head">modules</text>
+    <text x="16" y="78" class="field">🔑 id</text><text x="205" y="78" class="type">UUID</text>
+    <text x="16" y="111" class="field">🔗 course_id</text><text x="205" y="111" class="type">→ courses.id</text>
+    <text x="16" y="144" class="field">title</text><text x="205" y="144" class="type">VARCHAR</text>
+    <text x="16" y="177" class="field">order</text><text x="205" y="177" class="type">INT</text>
+    <text x="16" y="210" class="field">created_at</text><text x="205" y="210" class="type">DATETIME</text>
+    <text x="16" y="243" class="field">updated_at</text><text x="205" y="243" class="type">DATETIME</text>
+  </g>
+
+  <g transform="translate(1200 105)">
+    <rect class="box" width="260" height="325"/>
+    <rect class="head-lessons" width="260" height="48" rx="10"/>
+    <text x="16" y="31" class="head">lessons</text>
+    <text x="16" y="78" class="field">🔑 id</text><text x="175" y="78" class="type">UUID</text>
+    <text x="16" y="111" class="field">🔗 module_id</text><text x="175" y="111" class="type">→ modules.id</text>
+    <text x="16" y="144" class="field">title</text><text x="175" y="144" class="type">VARCHAR</text>
+    <text x="16" y="177" class="field">content</text><text x="175" y="177" class="type">TEXT</text>
+    <text x="16" y="210" class="field">order</text><text x="175" y="210" class="type">INT</text>
+    <text x="16" y="243" class="field">created_at</text><text x="175" y="243" class="type">DATETIME</text>
+    <text x="16" y="276" class="field">updated_at</text><text x="175" y="276" class="type">DATETIME</text>
+  </g>
+
+  <g transform="translate(460 610)">
+    <rect class="box" width="300" height="230"/>
+    <rect class="head-enrollments" width="300" height="48" rx="10"/>
+    <text x="16" y="31" class="head">enrollments</text>
+    <text x="16" y="78" class="field">🔑 id</text><text x="205" y="78" class="type">UUID</text>
+    <text x="16" y="111" class="field">🔗 user_id</text><text x="205" y="111" class="type">→ users.id</text>
+    <text x="16" y="144" class="field">🔗 course_id</text><text x="205" y="144" class="type">→ courses.id</text>
+    <text x="16" y="177" class="field">UNIQUE</text><text x="205" y="177" class="type">user + course</text>
+    <text x="16" y="210" class="field">created_at / updated_at</text>
+  </g>
+
+  <g transform="translate(1060 610)">
+    <rect class="box" width="340" height="230"/>
+    <rect class="head-progress" width="340" height="48" rx="10"/>
+    <text x="16" y="31" class="head">lesson_progress</text>
+    <text x="16" y="78" class="field">🔑 id</text><text x="245" y="78" class="type">UUID</text>
+    <text x="16" y="111" class="field">🔗 user_id</text><text x="245" y="111" class="type">→ users.id</text>
+    <text x="16" y="144" class="field">🔗 lesson_id</text><text x="245" y="144" class="type">→ lessons.id</text>
+    <text x="16" y="177" class="field">is_completed</text><text x="245" y="177" class="type">BOOLEAN</text>
+    <text x="16" y="210" class="field">completed_at</text><text x="245" y="210" class="type">DATE NULL</text>
+  </g>
+</svg>

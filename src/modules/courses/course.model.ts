@@ -16,6 +16,7 @@ export class Course extends Model<InferAttributes<Course>, InferCreationAttribut
   declare title: string
   declare description: string | null
   declare status: CreationOptional<CourseStatus>
+  declare deletedAt: CreationOptional<Date | null>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
@@ -31,10 +32,18 @@ export class Course extends Model<InferAttributes<Course>, InferCreationAttribut
           allowNull: false,
           defaultValue: 'DRAFT',
         },
+        deletedAt: { type: DataTypes.DATE, allowNull: true, field: 'deleted_at' },
         createdAt: { type: DataTypes.DATE, allowNull: false, field: 'created_at' },
         updatedAt: { type: DataTypes.DATE, allowNull: false, field: 'updated_at' },
       },
-      { sequelize, tableName: 'courses', modelName: 'Course', underscored: true },
+      {
+        sequelize,
+        tableName: 'courses',
+        modelName: 'Course',
+        underscored: true,
+        paranoid: true,
+        deletedAt: 'deletedAt',
+      },
     )
     return Course
   }

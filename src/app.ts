@@ -16,6 +16,7 @@ import { authRouter } from './modules/auth/auth.routes.js'
 import { demoRouter } from './modules/demo/demo.routes.js'
 import { userRouter } from './modules/users/user.routes.js'
 import { courseRouter } from './modules/courses/course.routes.js'
+import { enrollmentRouter } from './modules/enrollments/enrollment.routes.js'
 import { asyncHandler } from './shared/async-handler.js'
 import { sendSuccess } from './shared/api-response.js'
 
@@ -56,6 +57,8 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument))
 app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
 app.use('/api/courses', courseRouter)
+app.use('/test/courses', courseRouter)
+app.use('/api/enrollments', enrollmentRouter)
 app.use('/api/demo', demoRouter)
 
 app.use(notFound)

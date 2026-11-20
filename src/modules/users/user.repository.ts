@@ -42,7 +42,7 @@ export interface IUserRepository {
   updateRole(id: string, role: UserRole): Promise<User | null>
   updateActive(id: string, isActive: boolean): Promise<User | null>
   updateRoleGuarded(id: string, role: UserRole): Promise<GuardedUserUpdate>
-  updateActiveGuarded(id: string, isActive: boolean): Promise<GuardedUserUpdate>
+  updateActiveGuarded(id: string, isActive: boolean): Promise<GuardedUserUpdate> 
 }
 
 export class UserRepository implements IUserRepository {
@@ -113,14 +113,9 @@ export class UserRepository implements IUserRepository {
     const where: WhereOptions = {
       ...(input.role ? { role: input.role } : {}),
       ...(input.isActive === undefined ? {} : { isActive: input.isActive }),
-      ...(input.isVerified === undefined
-        ? {}
-        : {
-            emailVerifiedAt: input.isVerified ? { [Op.ne]: null } : { [Op.is]: null },
-          }),
-      ...(input.search
-        ? {
-            [Op.or]: [
+      ...(input.isVerified === undefined ? {} : { emailVerifiedAt: input.isVerified ? { [Op.ne]: null } : { [Op.is]: null },  }),
+      ...(input.search ? {  [Op.or]: 
+            [
               { name: { [Op.like]: `%${input.search}%` } },
               { email: { [Op.like]: `%${input.search}%` } },
             ],

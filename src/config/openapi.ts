@@ -30,6 +30,7 @@ export const openApiDocument = {
     { name: 'Sessions' },
     { name: 'Users administration' },
     { name: 'Authorization demos' },
+    { name: 'Courses' },
   ],
   components: {
     securitySchemes: {

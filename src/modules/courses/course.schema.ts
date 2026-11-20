@@ -15,3 +15,9 @@ export const updateCourseSchema = z
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Au moins un champ est requis.',
   })
+
+  export const paginationCourseSchema = z
+    .object({
+      page: z.coerce.number().int().min(1).default(1).optional(),
+      limit: z.coerce.number().int().min(5).max(100).default(2).optional(),
+    })

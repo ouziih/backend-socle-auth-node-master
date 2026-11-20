@@ -1,16 +1,28 @@
 import type { Request, Response } from 'express'
 import { sendSuccess } from '../../shared/api-response.js'
-import { CourseService } from './course.service.js'
+import { CourseService, PaginationCourse } from './course.service.js'
+import { isAdmin } from '../../utils/utils.js';
+
 
 const service = new CourseService()
 
-function isAdmin(request: Request) {
-  return request.auth?.role === 'admin'
-}
 
 export const CourseController = {
-  async index(_request: Request, response: Response) {
-    return sendSuccess(response, await service.list())
+  async index(request: Request, response: Response) {
+    const paginationData = request.validated?.query as PaginationCourse;
+    const {courses, pagination} = await service.list(paginationData);
+    return sendSuccess(response, {
+        courses: courses,
+        pagination:
+          {
+            totalPage: pagination.totalPages,
+            page: paginationData.page,
+            limit: pagination.limit,
+            total: pagination.total,
+            hasNextPage: pagination.hasNextPage,
+            hasPreviewPage: pagination.hasPreviousPage
+          }
+      })
   },
 
   async create(request: Request, response: Response) {
@@ -51,6 +63,14 @@ export const CourseController = {
     return sendSuccess(
       response,
       await service.publish(request.auth!.userId, isAdmin(request), id),
+    )
+  },
+
+  async unpublish(request: Request, response: Response) {
+    const { id } = request.validated?.params as { id: string }
+    return sendSuccess(
+      response,
+      await service.unpublish(request.auth!.userId, isAdmin(request), id),
     )
   },
 }

@@ -1,0 +1,149 @@
+1. Tests du schema Course
+
+• titre valide accepté ;
+• titre absent refusé ;
+• titre trop long refusé ;
+• description nullable acceptée ;
+• modification partielle valide acceptée ;
+• modification vide refusée.
+
+2. Tests de  CourseService 
+
+• création d’un cours en  DRAFT  ;
+• affichage d’un cours publié ;
+• brouillon non visible publiquement ;
+• modification par le propriétaire ;
+• modification par un autre teacher refusée ;
+• modification par un admin autorisée ;
+• publication d’un cours ;
+• dépublication vers  DRAFT  ;
+• suppression logique d’un brouillon ;
+• suppression d’un cours publié refusée ;
+• cours inexistant →  404 .
+
+3. Tests du schema Module
+
+• titre valide accepté ;
+• titre absent refusé ;
+•  order  valide accepté ;
+•  order  négatif refusé ;
+•  order  absent accepté.
+
+4. Tests de  ModuleService 
+
+• cours inexistant →  404  ;
+• teacher propriétaire autorisé ;
+• autre teacher refusé ;
+• admin autorisé ;
+•  order  par défaut à  0  ;
+• bonnes données transmises au repository.
+
+5. Tests HTTP avec Supertest
+
+Ensuite seulement :
+
+• authentification ;
+• autorisations ;
+• validation ;
+• réponses  201 ,  400 ,  403 ,  404 .
+
+Et pour  Lesson , nous écrirons d’abord son plan et ses tests avant toute implémentation.
+
+
+import { Router } from 'express'
+import {
+  authenticate,
+  authorize,
+  requireVerifiedEmail,
+} from '../../middlewares/authenticate.js'
+import { validateBody, validateParams, validateQuery } from '../../middlewares/validate.js'
+import { asyncHandler } from '../../shared/async-handler.js'
+import { CourseController } from './course.controller.js'
+import { ModuleController } from './module/module.controller.js'
+import { createModuleSchema } from './module/module.schema.js'
+import { LessonController } from './lesson/lesson.controller.js'
+import { createLessonSchema, moduleIdParamsSchema } from './lesson/lesson.schema.js'
+import { EnrollmentController } from '../enrollments/enrollment.controller.js'
+import {
+  courseEnrollmentParamsSchema,
+  enrollLearnerSchema,
+} from '../enrollments/enrollment.schema.js'
+import {
+  courseIdParamsSchema,
+  createCourseSchema,
+  paginationCourseSchema,
+  updateCourseSchema,
+} from './course.schema.js'
+
+export const courseRouter = Router()
+
+courseRouter.get(
+  '/',
+  validateQuery(paginationCourseSchema), 
+  asyncHandler(CourseController.index))
+
+courseRouter.get(
+  '/:id',
+  validateParams(courseIdParamsSchema),
+  asyncHandler(CourseController.show),
+)
+
+courseRouter.post(
+  '/:courseId/enroll',
+  authenticate,
+  requireVerifiedEmail,
+  validateParams(courseEnrollmentParamsSchema),
+  asyncHandler(EnrollmentController.selfEnroll),
+)
+
+courseRouter.use(authenticate, requireVerifiedEmail, authorize('admin', 'teacher'))
+courseRouter.post(
+  '/',
+  validateBody(createCourseSchema),
+  asyncHandler(CourseController.create),
+)
+courseRouter.patch(
+  '/:id',
+  validateParams(courseIdParamsSchema),
+  validateBody(updateCourseSchema),
+  asyncHandler(CourseController.update),
+)
+courseRouter.delete(
+  '/:id',
+  validateParams(courseIdParamsSchema),
+  asyncHandler(CourseController.remove),
+)
+courseRouter.post(
+  '/:id/publish',
+  validateParams(courseIdParamsSchema),
+  asyncHandler(CourseController.publish),
+)
+
+courseRouter.post(
+  '/:id/unpublish',
+  validateParams(courseIdParamsSchema),
+  asyncHandler(CourseController.unpublish),
+)
+courseRouter.post(
+  '/:id/modules',
+  validateParams(courseIdParamsSchema),
+  validateBody(createModuleSchema),
+  asyncHandler(ModuleController.create),
+)
+courseRouter.post(
+  '/modules/:moduleId/lessons',
+  validateParams(moduleIdParamsSchema),
+  validateBody(createLessonSchema),
+  asyncHandler(LessonController.create),
+)
+courseRouter.get(
+  '/:courseId/enrollments',
+  validateParams(courseEnrollmentParamsSchema),
+  asyncHandler(EnrollmentController.listCourse),
+)
+courseRouter.post(
+  '/:courseId/enrollments',
+  validateParams(courseEnrollmentParamsSchema),
+  validateBody(enrollLearnerSchema),
+  asyncHandler(EnrollmentController.enrollLearner),
+)
